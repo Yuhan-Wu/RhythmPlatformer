@@ -4,15 +4,32 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public FileChooser Chooser;
+
+    public AudioSource AudioPlayer;
+    private AudioClip AudioSample;
+
+    private Generator MapGenerator;
+
+    private void Start()
     {
-        
+        MapGenerator = GetComponent<Generator>();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void LoadFile()
     {
-        
+        if(Chooser.FilePathTextArea.text != "")
+        {
+            string[] paths = Chooser.FilePathTextArea.text.Split('/');
+            AudioSample = Resources.Load<AudioClip>(paths[paths.Length - 1].Split('.')[0]); ;
+            if (AudioSample)
+            {
+                AudioPlayer.clip = AudioSample;
+                AudioProcesser processer = new AudioProcesser(AudioSample);
+                List<SpectralFluxInfo> infos = processer.Process().FindAll(x => x.isPeak == true);
+                MapGenerator.Infos = infos;
+                MapGenerator.Generate();
+            }
+        }
     }
 }

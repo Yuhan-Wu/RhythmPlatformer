@@ -28,7 +28,10 @@ public class GameController : MonoBehaviour
                 AudioProcesser processer = new AudioProcesser(AudioSample);
                 List<SpectralFluxInfo> infos = processer.Process().FindAll(x => x.isPeak == true);
                 MapGenerator.Infos = infos;
+                MapGenerator.Clip = AudioSample;
+                Chooser.gameObject.SetActive(false);
                 MapGenerator.Generate();
+                AudioPlayer.Play();
             }
         }
     }

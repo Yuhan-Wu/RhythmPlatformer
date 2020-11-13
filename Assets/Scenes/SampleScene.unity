@@ -1090,6 +1090,7 @@ MonoBehaviour:
   Line: {fileID: 4606997699388158435, guid: 0704476a7e9a0b848a5c74e3efef1484, type: 3}
   Obstacles:
   - {fileID: 6358686210452827854, guid: e05039e0acaf5b64189b89ab342ed152, type: 3}
+  - {fileID: 4606997699388158435, guid: fa992e92241f25246b0d4f45caca2e22, type: 3}
   MapVelocity: 0.1
   ComplexJumpRestTime: 5
   NormalJumpRestTime: 4

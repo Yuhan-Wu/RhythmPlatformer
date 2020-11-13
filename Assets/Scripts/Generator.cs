@@ -13,28 +13,110 @@ public class Generator : MonoBehaviour
 
     public float MapVelocity = 0.1f;
     public int ComplexJumpRestTime = 5;
-    public int NormalJumpRestTime = 3;
+
+    private List<float> Mark = new List<float>();
+    private List<TileObstacle> TileObstacles = new List<TileObstacle>();
+
+    struct TileObstacle
+    {
+        public char Type;
+        public float StartTime;
+        public float EndTime;
+        public float Number;
+    }
+
+    private void MarkObstacle()
+    {
+        int markIndex = 0;
+        for (int i = 0; i < Infos.Count; i++)
+        {
+            float time = Infos[i].time;
+            int temp = (int)(time * (1 / MapVelocity));
+            float roundTime = (float)((temp * 1.0) * MapVelocity);
+            if(markIndex!=0 && Mark[markIndex] != roundTime)
+            {
+                Mark.Add(roundTime);
+                markIndex++;
+            }
+        }
+    }
+
+    private void AnalyzeMark()
+    {
+        int markIndex = 0;
+        while (markIndex != Mark.Count)
+        {
+            int tempIndex = markIndex;
+            int consecutive = 1;
+            tempIndex++;
+            while (tempIndex < Mark.Count)
+            {
+                if(Mark[tempIndex].Equals(Mark[tempIndex] + 0.1f))
+                {
+                    consecutive++;
+                    tempIndex++;
+                }
+                else break;
+            }
+            if(consecutive > 1)
+            {
+                // TODO > 3 in a line = trampoline
+                markIndex = tempIndex;
+                continue;
+            }
+
+       
+            tempIndex = markIndex;
+            consecutive = 1;
+            float curDelta = 0;
+            if(tempIndex + 1 < Mark.Count)
+            {
+                curDelta = Mark[tempIndex + 1] - Mark[tempIndex];
+                tempIndex++;
+                while(tempIndex + 1 < Mark.Count)
+                {
+                    float tempDelta = Mark[tempIndex + 1] - Mark[tempIndex];
+                    if (tempDelta.Equals(curDelta))
+                    {
+                        consecutive++;
+                        tempIndex++;
+                    }
+                    else break;
+                }
+                // TODO should also put restriction on delta
+                if(consecutive > 2 && consecutive < 4) 
+                {
+                    // TODO 2 or 3 same pattern = blinking line
+                    markIndex = tempIndex;
+                    continue;
+                }
+                else if(consecutive > 2)
+                {
+                    // TODO 4 or more same pattern = wall jump
+                    markIndex = tempIndex;
+                    continue;
+                }
+            }
+
+            
+            // TODO Spike
+            
+        }
+    }
 
     private void InfoFilter()
     {
+        MarkObstacle();
+        AnalyzeMark();
         int infoIndex = 1;
-        bool lastWasCons = false;
-        while(infoIndex < Infos.Count)
+        while(infoIndex < TileObstacles.Count)
         {
-            float timeDelta = Infos[infoIndex].time - Infos[infoIndex - 1].time;
-            if(timeDelta <= MapVelocity)
+            if(TileObstacles[infoIndex].StartTime - TileObstacles[infoIndex - 1].EndTime < ComplexJumpRestTime * MapVelocity)
             {
-                lastWasCons = true;
-                infoIndex++;
-            }
-            else if((lastWasCons && timeDelta < MapVelocity * ComplexJumpRestTime) || timeDelta < MapVelocity * NormalJumpRestTime)
-            {
-                Infos.RemoveAt(infoIndex);
-                continue;
+                TileObstacles.RemoveAt(infoIndex);
             }
             else
             {
-                lastWasCons = false;
                 infoIndex++;
             }
         }
@@ -54,28 +136,17 @@ public class Generator : MonoBehaviour
 
         for (var i = 0; i < iteration; i++)
         {
-            bool spawnLine = true;
-            while(infoIndex < Infos.Count && i * MapVelocity < Infos[infoIndex].time && (i + 1) * MapVelocity > Infos[infoIndex].time)
+            if (TileObstacles[infoIndex].StartTime.Equals(i * MapVelocity))
             {
-                // TODO Spawn in obstacle
+                // TODO Spawn obstacle
+            }
+            else
+            {
                 cloneLine = Instantiate(Obstacles[0]);
                 cloneLine.transform.parent = Map.transform;
                 cloneLine.transform.localPosition = location;
-
-                infoIndex++;
-                spawnLine = false;
-
                 location.x += 1;
             }
-
-            if (spawnLine)
-            {
-                cloneLine = Instantiate(Line);
-                cloneLine.transform.parent = Map.transform;
-                cloneLine.transform.localPosition = location;
-                location.x += 1;
-            }
-            
         }
 
         GameObject ball = Instantiate(Ball);

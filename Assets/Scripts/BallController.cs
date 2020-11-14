@@ -24,14 +24,14 @@ public class BallController : MonoBehaviour
     {
         Vector2 distance = Vector2.right * MoveVelocity * Time.deltaTime;
         transform.position += new Vector3(distance.x, 0, 0);
-        ActiveCamera.transform.position += new Vector3(distance.x, 0, 0);
+        ActiveCamera.transform.position = new Vector3(transform.position.x, 0, -2);
 
         if (!isJumping)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 isJumping = true;
-                rigidbody.AddForce(new Vector2(0, 8), ForceMode2D.Impulse);
+                rigidbody.AddForce(new Vector2(0, 7), ForceMode2D.Impulse);
             }
         }
         else

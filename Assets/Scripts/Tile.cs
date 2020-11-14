@@ -4,7 +4,18 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    public virtual void Initialize(int p_Index, float p_MapVel) { }
+    protected float TileScale = 1;
+    protected float MapVel = 0;
+
+    public virtual void Initialize(TileObstacle p_Info, float p_MapVel)
+    {
+        MapVel = p_MapVel;
+    }
+
+    public virtual void Scale(float p_Scale) {
+        TileScale = p_Scale;
+        transform.localScale = new Vector3(p_Scale, 1, 1);
+    }
 
     private void OnCollisionEnter(Collision collision)
     {

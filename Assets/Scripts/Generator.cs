@@ -212,8 +212,9 @@ public class Generator : MonoBehaviour
         GameObject cloneLine = Instantiate(Line);
         cloneLine.transform.parent = Map.transform;
         cloneLine.transform.localPosition = new Vector3(-1, 0, 0);
+        int i = 0;
 
-        for (var i = 0; i < iteration; i++)
+        for (; i < iteration; i++)
         {
             if (infoIndex < TileObstacles.Count && Mathf.Abs(TileObstacles[infoIndex].StartTime - i * MapVelocity) <= 0.11f)
             {
@@ -263,12 +264,15 @@ public class Generator : MonoBehaviour
                 cloneLine.transform.parent = Map.transform;
                 cloneLine.transform.localPosition = location;
                 location.x += 1;
+                if(Mathf.Abs(i - (iteration - 1)) < 0.11f)
+                {
+                    cloneLine.tag = "Succeed";
+                }
             }
         }
 
-        GameObject ball = Instantiate(Ball);
-        ball.transform.position = new Vector3(-0.85f, 0.6f, 0);
+        Ball.transform.position = new Vector3(-0.85f, 0.6f, 0);
         float moveVelocity = 1 / MapVelocity;
-        ball.GetComponent<BallController>().Initialize(moveVelocity);
+        Ball.GetComponent<BallController>().Initialize(moveVelocity);
     }
 }

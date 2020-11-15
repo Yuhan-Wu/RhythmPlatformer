@@ -6,8 +6,7 @@ public class BallController : MonoBehaviour
 {
     public Camera ActiveCamera;
     public float MoveVelocity = 10;
-    public float JumpVelocity;
-
+    public float JumpVelocity = 7;
     private Rigidbody2D rigidbody;
 
     private bool isJumping = false;
@@ -31,7 +30,7 @@ public class BallController : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 isJumping = true;
-                rigidbody.AddForce(new Vector2(0, 7), ForceMode2D.Impulse);
+                rigidbody.AddForce(new Vector2(0, JumpVelocity), ForceMode2D.Impulse);
             }
         }
         else

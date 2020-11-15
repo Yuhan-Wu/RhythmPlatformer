@@ -7,9 +7,9 @@ public struct TileObstacle
     public char Type;
     public float StartTime;
     public float EndTime;
-    public float Number;
+    public int Number;
 
-    public TileObstacle(char p_Type, float p_StartTime, float p_EndTime, float p_Number = 1)
+    public TileObstacle(char p_Type, float p_StartTime, float p_EndTime, int p_Number = 1)
     {
         Type = p_Type;
         StartTime = p_StartTime;
@@ -38,6 +38,7 @@ public class Generator : MonoBehaviour
     public float MapVelocity = 0.1f;
     public int ComplexJumpRestTime = 5;
     public float ComplexJumpReactionTime = 0;
+    public float FurthestJump = 1.5f;
 
     private List<float> Mark = new List<float>();
     private List<TileObstacle> TileObstacles = new List<TileObstacle>();
@@ -80,16 +81,22 @@ public class Generator : MonoBehaviour
             tempIndex++;
             while (tempIndex < Mark.Count)
             {
-                if(Mathf.Abs(Mark[tempIndex] - Mark[tempIndex]) < 0.2f && Mathf.Abs(Mark[tempIndex] - Mark[tempIndex]) >= 0.1f)
+                if(Mathf.Abs(Mark[tempIndex] - Mark[tempIndex]) < 0.2f * MapVelocity && Mathf.Abs(Mark[tempIndex] - Mark[tempIndex]) >= 0.1)
                 {
                     consecutive++;
                     tempIndex++;
                 }
                 else break;
             }
-            if(consecutive > 1)
+            if(consecutive > 2 && consecutive <= 4)
             {
-                // TODO > 3 in a line = trampoline
+                TileObstacle trampoline = new TileObstacle('T', Mark[markIndex], Mark[markIndex] + MapVelocity, consecutive - 1);
+                TileObstacles.Add(trampoline);
+                for(int j = 0; j < consecutive - 1; j++)
+                {
+                    TileObstacle spikeForT = new TileObstacle('S', Mark[markIndex] + MapVelocity * (j + 1), Mark[markIndex] + MapVelocity * (j + 2));
+                    TileObstacles.Add(spikeForT);
+                }
                 markIndex = tempIndex;
                 continue;
             }
@@ -112,10 +119,9 @@ public class Generator : MonoBehaviour
                     }
                     else break;
                 }
-                // TODO should also put restriction on delta
-                if(consecutive >= 2 && consecutive < 4 && curDelta > ComplexJumpReactionTime) 
+
+                if(consecutive > 2 && consecutive <= 5 && curDelta > ComplexJumpReactionTime) 
                 {
-                    // TODO 2 or 3 same pattern = blinking line
                     TileObstacle blink = new TileObstacle('B', Mark[markIndex], Mark[tempIndex - 1], consecutive);
                     TileObstacles.Add(blink);
                     markIndex = tempIndex;
@@ -123,12 +129,11 @@ public class Generator : MonoBehaviour
                 }
                 else if(consecutive >= 4)
                 {
-                    // TODO 4 or more same pattern = wall jump
+                    // TODO 4 or more same pattern = wall jump && check delta
                     markIndex = tempIndex;
                     continue;
                 }
             }
-
 
             TileObstacle spike = new TileObstacle('S', Mark[markIndex], Mark[markIndex] + MapVelocity);
             TileObstacles.Add(spike);
@@ -146,7 +151,48 @@ public class Generator : MonoBehaviour
         {
             if(TileObstacles[infoIndex].StartTime - TileObstacles[infoIndex - 1].EndTime < ComplexJumpRestTime * MapVelocity)
             {
-                TileObstacles.RemoveAt(infoIndex);
+                if(TileObstacles[infoIndex - 1].Type == 'T')
+                {
+
+                    infoIndex += TileObstacles[infoIndex - 1].Number;
+                    continue;
+                }
+                // TODO trampoline
+                if (TileObstacles[infoIndex - 1].Type == 'S')
+                {
+                    int randomTram = UnityEngine.Random.Range(0, 100);
+                    if (randomTram > 50 && (infoIndex - 2 < 0 || (infoIndex - 2 >= 0 && TileObstacles[infoIndex - 1].StartTime - TileObstacles[infoIndex - 2].EndTime > ComplexJumpRestTime * MapVelocity)))
+                    {
+                        int tempIndex = infoIndex;
+                        while (tempIndex < TileObstacles.Count && TileObstacles[tempIndex].Type == 'S' && TileObstacles[tempIndex].StartTime - TileObstacles[infoIndex - 1].EndTime < ComplexJumpRestTime * MapVelocity)
+                        {
+                            tempIndex++;
+                        }
+                        int TotalNum = (int)(Mathf.Round((TileObstacles[tempIndex - 1].StartTime - TileObstacles[infoIndex - 1].StartTime) / MapVelocity));
+                        if (TotalNum > 2)
+                        {
+                            TotalNum = TotalNum > 5 ? 5 : TotalNum;
+                            TileObstacle trampoline = new TileObstacle('T', TileObstacles[infoIndex - 1].StartTime, TileObstacles[infoIndex - 1].StartTime + MapVelocity, TotalNum - 1);
+                            for (int i = infoIndex - 1; i < tempIndex; i++)
+                            {
+                                TileObstacles.RemoveAt(infoIndex - 1);
+                            }
+                            TileObstacles.Insert(infoIndex - 1, trampoline);
+                            for (int j = 0; j < TotalNum - 1; j++)
+                            {
+                                TileObstacle spikeForT = new TileObstacle('S', TileObstacles[infoIndex - 1 + j].EndTime, TileObstacles[infoIndex - 1 + j].EndTime + MapVelocity);
+                                TileObstacles.Insert(infoIndex + j, spikeForT);
+                            }
+                            infoIndex += TotalNum - 1;
+                            continue;
+                        }
+                    }
+                }
+
+                if (TileObstacles[infoIndex].Type != 'B')
+                    TileObstacles.RemoveAt(infoIndex);
+                else
+                    infoIndex++;
             }
             else
             {
@@ -169,10 +215,15 @@ public class Generator : MonoBehaviour
 
         for (var i = 0; i < iteration; i++)
         {
-            if (infoIndex < TileObstacles.Count && Mathf.Abs(TileObstacles[infoIndex].StartTime - i * MapVelocity) < 0.1f)
+            if (infoIndex < TileObstacles.Count && Mathf.Abs(TileObstacles[infoIndex].StartTime - i * MapVelocity) <= 0.11f)
             {
-                int perLength = (int)Mathf.Round((TileObstacles[infoIndex].EndTime - TileObstacles[infoIndex].StartTime) / MapVelocity
+                int perLength = 1;
+                
+                if(TileObstacles[infoIndex].Type != 'T')
+                {
+                    perLength = (int)Mathf.Round((TileObstacles[infoIndex].EndTime - TileObstacles[infoIndex].StartTime) / MapVelocity
                     / TileObstacles[infoIndex].Number);
+                }
                 location.x += (perLength + 1) / 2.0f - 1;
                 GameObject ObstacleIns = Obstacles.Find(x => x.Type == TileObstacles[infoIndex].Type).Tile;
                 for (int j = 0; j < TileObstacles[infoIndex].Number; j++)
@@ -184,7 +235,8 @@ public class Generator : MonoBehaviour
                     TileObstacle info = new TileObstacle(TileObstacles[infoIndex]);
                     info.StartTime += j * perLength * MapVelocity;
                     info.EndTime = info.StartTime + perLength * MapVelocity;
-                    info.Number = j;
+                    if(TileObstacles[infoIndex].Type != 'T')
+                        info.Number = j;
                     obstacle.GetComponent<Tile>().Initialize(info, MapVelocity);
 
                     if(j == 0)
@@ -200,6 +252,8 @@ public class Generator : MonoBehaviour
                         location.x += perLength;
                     else
                         location.x += (perLength + 1) / 2.0f;
+
+                    if (TileObstacles[infoIndex].Type == 'T') break;
                 }
                 infoIndex++;
             }
@@ -213,7 +267,7 @@ public class Generator : MonoBehaviour
         }
 
         GameObject ball = Instantiate(Ball);
-        ball.transform.position = new Vector3(-1, 0.6f, 0);
+        ball.transform.position = new Vector3(-0.85f, 0.6f, 0);
         float moveVelocity = 1 / MapVelocity;
         ball.GetComponent<BallController>().Initialize(moveVelocity);
     }

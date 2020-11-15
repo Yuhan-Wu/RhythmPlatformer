@@ -11,19 +11,17 @@ public class TileBlink : Tile
     private float TotalTime = 0;
     private bool Enter = false;
     private bool Over = false;
-    private bool Active = false;
 
     public override void Initialize (TileObstacle p_Info, float p_MapVel)
     {
         base.Initialize(p_Info, p_MapVel);
         Start = p_Info.StartTime - Delay;
-        End = p_Info.EndTime + Delay;
-        Active = (p_Info.Number % 2 == 1); 
+        End = p_Info.EndTime + Delay; 
     }
 
     private void Update()
     {
-        if (Active && !Over)
+        if (!Over)
         {
             TotalTime += Time.deltaTime;
             if (!Enter && TotalTime >= Start)

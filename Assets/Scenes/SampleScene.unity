@@ -206,7 +206,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -279,7 +279,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.02367392, g: 0.17364372, b: 0.7169812, a: 0}
+  m_BackGroundColor: {r: 0.34509805, g: 0.43529415, b: 0.76470596, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -1093,9 +1093,12 @@ MonoBehaviour:
     Tile: {fileID: 6358686210452827854, guid: e05039e0acaf5b64189b89ab342ed152, type: 3}
   - Type: 66
     Tile: {fileID: 4606997699388158435, guid: fa992e92241f25246b0d4f45caca2e22, type: 3}
+  - Type: 84
+    Tile: {fileID: 1382055299509136803, guid: baec0ebfcbede9541bfe91b0966ada84, type: 3}
   MapVelocity: 0.1
   ComplexJumpRestTime: 5
   ComplexJumpReactionTime: 0.3
+  FurthestJump: 1.5
 --- !u!1 &1418834439
 GameObject:
   m_ObjectHideFlags: 0

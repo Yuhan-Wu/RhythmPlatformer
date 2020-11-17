@@ -120,7 +120,7 @@ public class Generator : MonoBehaviour
                     else break;
                 }
 
-                if(consecutive > 2 && consecutive <= 5 && curDelta > ComplexJumpReactionTime) 
+                if(consecutive > 2 && curDelta > ComplexJumpReactionTime) 
                 {
                     TileObstacle blink = new TileObstacle('B', Mark[markIndex], Mark[tempIndex - 1], consecutive);
                     TileObstacles.Add(blink);

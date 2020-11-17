@@ -15,8 +15,8 @@ public class TileBlink : Tile
     public override void Initialize (TileObstacle p_Info, float p_MapVel)
     {
         base.Initialize(p_Info, p_MapVel);
-        Start = p_Info.StartTime - Delay / 2.0f;
-        End = p_Info.EndTime - Delay; 
+        Start = p_Info.StartTime - Delay;
+        End = p_Info.EndTime - (p_Info.EndTime - p_Info.StartTime) * 0.07f; 
     }
 
     private void Update()

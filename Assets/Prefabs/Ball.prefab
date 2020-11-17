@@ -74,7 +74,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: f6011a5bcd0fc1a409e719cbd00c49cc, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.6509434, g: 0.6417319, b: 0.6417319, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -97,9 +97,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.014999986, y: 0.03530711}
+  m_Offset: {x: -0.014999956, y: 0.03530711}
   serializedVersion: 2
-  m_Radius: 0.25032276
+  m_Radius: 0.25412175
 --- !u!50 &6428478397193770590
 Rigidbody2D:
   serializedVersion: 4
@@ -136,3 +136,6 @@ MonoBehaviour:
   ActiveCamera: {fileID: 0}
   MoveVelocity: 10
   JumpVelocity: 7
+  Succeed: {fileID: 0}
+  Fail: {fileID: 0}
+  DefaultGravity: 4

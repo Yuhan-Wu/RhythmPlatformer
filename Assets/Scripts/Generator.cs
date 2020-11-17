@@ -50,6 +50,14 @@ public class Generator : MonoBehaviour
         public GameObject Tile;
     }
 
+    public void Clean()
+    {
+        foreach(Transform child in Map.transform)
+        {
+            Destroy(child.gameObject);
+        }
+    }
+
     private void MarkObstacle()
     {
         int markIndex = 0;
@@ -120,7 +128,7 @@ public class Generator : MonoBehaviour
                     else break;
                 }
 
-                if(consecutive > 2 && curDelta > ComplexJumpReactionTime) 
+                if(consecutive > 2 && consecutive <= 6 && curDelta > ComplexJumpReactionTime) 
                 {
                     TileObstacle blink = new TileObstacle('B', Mark[markIndex], Mark[tempIndex - 1], consecutive);
                     TileObstacles.Add(blink);
@@ -149,6 +157,12 @@ public class Generator : MonoBehaviour
         int infoIndex = 1;
         while(infoIndex < TileObstacles.Count)
         {
+            if(TileObstacles[infoIndex - 1].StartTime < .5f)
+            {
+                TileObstacles.RemoveAt(infoIndex - 1);
+                continue;
+            }
+
             if(TileObstacles[infoIndex].StartTime - TileObstacles[infoIndex - 1].EndTime < ComplexJumpRestTime * MapVelocity)
             {
                 if(TileObstacles[infoIndex - 1].Type == 'T')
@@ -189,10 +203,10 @@ public class Generator : MonoBehaviour
                     }
                 }
 
-                if (TileObstacles[infoIndex].Type != 'B')
-                    TileObstacles.RemoveAt(infoIndex);
-                else
+                if(TileObstacles[infoIndex].Type == 'B' && TileObstacles[infoIndex].StartTime - TileObstacles[infoIndex - 1].EndTime > ComplexJumpRestTime * MapVelocity * 0.2f)
                     infoIndex++;
+                else
+                    TileObstacles.RemoveAt(infoIndex);
             }
             else
             {

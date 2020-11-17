@@ -31,8 +31,7 @@ public class GameController : MonoBehaviour
                 MapGenerator.Infos = infos;
                 MapGenerator.Clip = AudioSample;
                 Chooser.gameObject.SetActive(false);
-                MapGenerator.Generate();
-                AudioPlayer.Play();
+                LoadMap();
             }
         }
     }
@@ -50,5 +49,17 @@ public class GameController : MonoBehaviour
     public void Restart(string p_Scene)
     {
         SceneManager.LoadScene(p_Scene, LoadSceneMode.Single);
+    }
+
+    public void Reload()
+    {
+        MapGenerator.Clean();
+        LoadMap();
+    }
+
+    private void LoadMap()
+    {
+        MapGenerator.Generate();
+        AudioPlayer.Play();
     }
 }

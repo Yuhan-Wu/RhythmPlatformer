@@ -16,6 +16,7 @@ public class BallController : MonoBehaviour
 
     private bool isJumping = false;
     private bool isOver = true;
+    private bool isOnGround = true;
 
     public void Initialize(float p_MoveVel)
     {
@@ -41,11 +42,12 @@ public class BallController : MonoBehaviour
                 return;
             }
 
-            if (!isJumping)
+            if (!isJumping && isOnGround)
             {
                 if (Input.GetKeyDown(KeyCode.Space))
                 {
                     isJumping = true;
+                    isOnGround = false;
                     rigidbody.AddForce(new Vector2(0, JumpVelocity), ForceMode2D.Impulse);
                 }
             }
@@ -70,6 +72,10 @@ public class BallController : MonoBehaviour
         {
             Succeed.SetActive(true);
             isOver = true;
+        }
+        else
+        {
+            isOnGround = true;
         }
     }
 

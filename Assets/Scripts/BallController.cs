@@ -34,7 +34,7 @@ public class BallController : MonoBehaviour
         {
             Vector2 distance = Vector2.right * MoveVelocity * Time.deltaTime;
             transform.position += new Vector3(distance.x, 0, 0);
-            ActiveCamera.transform.position = new Vector3(transform.position.x, 0, -2);
+            ActiveCamera.transform.position = new Vector3(transform.position.x, 0, -1.5f);
 
             if(transform.position.y < -10)
             {

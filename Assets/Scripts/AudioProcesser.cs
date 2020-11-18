@@ -88,13 +88,6 @@ public class AudioProcesser
 
     }
 
-    private int getIndexFromTime(float curTime)
-    {
-        float lengthPerSample = this.ClipLength / (float)this.NumOfTotalSamples;
-
-        return Mathf.FloorToInt(curTime / lengthPerSample);
-    }
-
     private float getTimeFromIndex(int index)
     {
         return ((1f / (float)this.SampleRate) * index);
